@@ -4,7 +4,7 @@ using namespace std;
 
 int main(){
 
-    long long int number_in_circle = 0, number_of_tosses = 10000000;
+    long long int number_in_circle = 0, number_of_tosses = 100000000;
 
     srand(time(NULL));
 
