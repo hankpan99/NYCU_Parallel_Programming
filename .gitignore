@@ -1,0 +1,9 @@
+# ignore hidden files
+.*
+!.gitignore
+
+# ignore snap folder
+/snap/*
+
+# ignore excel files
+*.xlsx
