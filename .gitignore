@@ -7,3 +7,6 @@
 
 # ignore excel files
 *.xlsx
+
+# ignore graphs (HW3)
+*.graph
