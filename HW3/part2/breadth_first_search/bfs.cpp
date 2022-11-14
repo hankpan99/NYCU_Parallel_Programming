@@ -32,6 +32,9 @@ void vertex_set_init(vertex_set *list, int count)
 void top_down_step(Graph g, vertex_set *frontier, int *distances, int iteration){
     int next_iter_front_cnt = 0;
 
+    // frontier->vertices[i] = k, represents node "i" should be process in iteration "k" 
+    // => this representation can prevent data race problems
+    // top_down bfs: expend all neighbors in the frontier nodes, might duplicated nodes in the frontier
     #pragma omp parallel for reduction (+:next_iter_front_cnt)
     for(int i = 0; i < g->num_nodes; i++){
         if(frontier->vertices[i] == iteration){
@@ -78,18 +81,18 @@ void bfs_top_down(Graph graph, solution *sol)
     while (frontier->count != 0)
     {
 
-// #ifdef VERBOSE
+#ifdef VERBOSE
         double start_time = CycleTimer::currentSeconds();
-// #endif
+#endif
 
         vertex_set_clear(frontier);
 
         top_down_step(graph, frontier, sol->distances, iteration);
 
-// #ifdef VERBOSE
+#ifdef VERBOSE
         double end_time = CycleTimer::currentSeconds();
         printf("frontier=%-10d %.4f sec\n", frontier->count, end_time - start_time);
-// #endif
+#endif
 
         // next iteration
         iteration++;
@@ -99,6 +102,7 @@ void bfs_top_down(Graph graph, solution *sol)
 void bottom_up_step(Graph g, vertex_set *frontier, int *distances, int iteration){
     int next_iter_front_cnt = 0;
 
+    // bottom up: traverse all non-visited nodes, only expend nodes once
     #pragma omp parallel for reduction (+:next_iter_front_cnt)
     for(int i = 0; i < g->num_nodes; i++){
         if(distances[i] == NOT_VISITED_MARKER){
@@ -112,6 +116,8 @@ void bottom_up_step(Graph g, vertex_set *frontier, int *distances, int iteration
                     next_iter_front_cnt++;
                     distances[i] = distances[incoming] + 1;
                     frontier->vertices[i] = iteration + 1;
+                    // once node "i" can be reached from node "incoming" (placed into frontier),
+                    // we don't need to consider other sources any more
                     break;
                 }
             }
@@ -153,18 +159,18 @@ void bfs_bottom_up(Graph graph, solution *sol)
     while (frontier->count != 0)
     {
 
-// #ifdef VERBOSE
+#ifdef VERBOSE
         double start_time = CycleTimer::currentSeconds();
-// #endif
+#endif
 
         vertex_set_clear(frontier);
 
         bottom_up_step(graph, frontier, sol->distances, iteration);
 
-// #ifdef VERBOSE
+#ifdef VERBOSE
         double end_time = CycleTimer::currentSeconds();
         printf("frontier=%-10d %.4f sec\n", frontier->count, end_time - start_time);
-// #endif
+#endif
 
         // next iteration
         iteration++;
@@ -199,11 +205,13 @@ void bfs_hybrid(Graph graph, solution *sol)
 #ifdef VERBOSE
         double start_time = CycleTimer::currentSeconds();
 #endif
-
+        
+        // small frontier, iterate through frontiers will be faster
         if(frontier->count < THRESHOLD){
             vertex_set_clear(frontier);
             top_down_step(graph, frontier, sol->distances, iteration);
         }
+        // large frontier, iterate through unvisited nodes will be faster
         else{
             vertex_set_clear(frontier);
             bottom_up_step(graph, frontier, sol->distances, iteration);
