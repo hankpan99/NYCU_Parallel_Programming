@@ -66,6 +66,7 @@ void pageRank(Graph g, double *solution, double damping, double convergence){
     }
 
     free(sol_old);
+    free(outsize);
 
     /*
         For PP students: Implement the page rank algorithm here.  You
