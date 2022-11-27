@@ -41,19 +41,15 @@ int main(int argc, char **argv){
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);	/* get current process id */
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);	/* get number of processes */
 
-    long long int number_in_circle = 0;
     srand(world_rank);
+    long long int number_in_circle = toss_func(world_rank, world_size, tosses);
 
     if(world_rank > 0){
         // TODO: handle workers
-        number_in_circle = toss_func(world_rank, world_size, tosses);
-        
         MPI_Send(&number_in_circle, 1, MPI_LONG_LONG, 0, 0, MPI_COMM_WORLD);
     }
     else if(world_rank == 0){
         // TODO: master
-        number_in_circle = toss_func(world_rank, world_size, tosses);
-
         long long int tmp_recv;
         for(int i = 1; i < world_size; i++){
             MPI_Recv(&tmp_recv, 1, MPI_LONG_LONG, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
