@@ -14,7 +14,7 @@ long long int toss_func(int rank, int size, long long int tosses){
     // computation variables
     long long int my_valid = 0;
     double x, y, distance_squared;
-    unsigned seed = rank;
+    unsigned seed = time(NULL) * rank;
 
     for(long long int i = my_first_i; i < my_last_i; i++){
         x = 2 * (((double) rand_r(&seed)) / RAND_MAX) - 1;
@@ -41,7 +41,7 @@ int main(int argc, char **argv){
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);	/* get current process id */
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);	/* get number of processes */
 
-    srand(world_rank);
+    srand(time(NULL) * world_rank);
     long long int number_in_circle = toss_func(world_rank, world_size, tosses);
 
     if(world_rank > 0){
