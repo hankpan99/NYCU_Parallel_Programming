@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #define GROUP_SIZE 5
 
-__global__ void mandelKernel(int *device_data, int lowerX, int lowerY, int stepX, int stepY, size_t pitch, int maxIterations){
+__global__ void mandelKernel(int *device_data, float lowerX, float lowerY, float stepX, float stepY, size_t pitch, int maxIterations){
     // To avoid error caused by the floating number, use the following pseudo code
     //
     // float x = lowerX + thisX * stepX;
