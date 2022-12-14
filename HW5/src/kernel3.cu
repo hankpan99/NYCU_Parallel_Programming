@@ -17,21 +17,21 @@ __global__ void mandelKernel(int *device_data, float lowerX, float lowerY, float
     for(int i = 0; i < GROUP_SIZE; i++){
         for(int j = 0; j < GROUP_SIZE; j++){
             // find desire pixel in the thread group
-            thisX = thisX + j;
-            thisY = thisY + i;
+            int localX = thisX + j;
+            int localY = thisY + i;
 
             // initialize mandel variables
-            float c_re = lowerX + thisX * stepX;
-            float c_im = lowerY + thisY * stepY;
+            float c_re = lowerX + localX * stepX;
+            float c_im = lowerY + localY * stepY;
             float z_re = c_re, z_im = c_im;
 
             // pointer points to the pixel should be processed in this thread
-            int* ptr = (int*) ((char*) device_data + thisY * pitch) + thisX;
+            int* ptr = (int*) ((char*) device_data + localY * pitch) + localX;
 
             // by theorem in mandel, if |c| <= 0.25 then c belongs to M
             if(z_re * z_re + z_im * z_im <= 0.25f * 0.25f){
                 *ptr = maxIterations;
-                return;
+                continue;
             }
             
             // mandel iteration
