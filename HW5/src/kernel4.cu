@@ -40,30 +40,6 @@ __global__ void mandelKernel(int *device_data, float lowerX, float lowerY, float
 
 // Host front-end function that allocates the memory and launches the GPU kernel
 void hostFE(float upperX, float upperY, float lowerX, float lowerY, int* img, int resX, int resY, int maxIterations){
-    // // compute steps
-    // float stepX = (upperX - lowerX) / resX;
-    // float stepY = (upperY - lowerY) / resY;
-
-    // // allocate memory
-    // int N = resX * resY;
-    // int *host_data;
-    // cudaHostAlloc((void**) &host_data, N * sizeof(int), cudaHostAllocMapped);
-
-    // int *device_data;
-    // cudaHostGetDevicePointer(&device_data, host_data, 0);
-
-    // // launch kernel function
-    // dim3 threads_per_block(20, 20);
-    // dim3 num_blocks(resX / threads_per_block.x, resY / threads_per_block.y);
-    // mandelKernel<<<num_blocks, threads_per_block>>>(device_data, lowerX, lowerY, stepX, stepY, resX, maxIterations);
-    
-    // // output answers
-    // cudaMemcpy(host_data, device_data, N * sizeof(int), cudaMemcpyDeviceToHost);
-    // memcpy(img, host_data, N * sizeof(int));
-    
-    // // free memory
-    // cudaFreeHost(host_data);
-
     // compute steps
     float stepX = (upperX - lowerX) / resX;
     float stepY = (upperY - lowerY) / resY;
@@ -72,8 +48,8 @@ void hostFE(float upperX, float upperY, float lowerX, float lowerY, int* img, in
     int N = resX * resY;
 
     int *device_data;
-    // cudaMalloc(&device_data, N * sizeof(int));
-    cudaHostGetDevicePointer(&device_data, img, 0);
+    cudaMalloc(&device_data, N * sizeof(int));
+    // cudaHostGetDevicePointer(&device_data, img, 0);
 
     // launch kernel function
     dim3 threads_per_block(20, 20);
