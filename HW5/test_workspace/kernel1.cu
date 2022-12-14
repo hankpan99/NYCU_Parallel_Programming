@@ -46,11 +46,11 @@ void hostFE(float upperX, float upperY, float lowerX, float lowerY, int* img, in
 
     // allocate memory
     int N = resX * resY;
+    int *host_data;
+    host_data = (int*) malloc(N * sizeof(int));
 
     int *device_data;
-    // cudaMalloc(&device_data, N * sizeof(int));
-    cudaHostRegister(img, N * sizeof(int), cudaHostRegisterMapped);
-    cudaHostGetDevicePointer(&device_data, img, 0);
+    cudaMalloc(&device_data, N * sizeof(int));
 
     // launch kernel function
     dim3 threads_per_block(20, 20);
@@ -60,12 +60,11 @@ void hostFE(float upperX, float upperY, float lowerX, float lowerY, int* img, in
     // wait for kernel function finish
     cudaDeviceSynchronize();
 
-    // unregister memory
-    cudaHostUnregister(img);
-
     // output answers
-    cudaMemcpy(img, device_data, N * sizeof(int), cudaMemcpyDeviceToHost);
+    cudaMemcpy(host_data, device_data, N * sizeof(int), cudaMemcpyDeviceToHost);
+    memcpy(img, host_data, N * sizeof(int));
     
     // free memory
     cudaFree(device_data);
+    free(host_data);
 }
