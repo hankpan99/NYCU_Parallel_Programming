@@ -21,7 +21,7 @@ __global__ void mandelKernel(int *device_data, float lowerX, float lowerY, float
     int* ptr = (int*) ((char*) device_data + thisY * pitch) + thisX;
 
     // by theorem in mandel, if |c| <= 0.25 then c belongs to M
-    if(z_re * z_re + z_im * z_im <= 0.25f){
+    if(z_re * z_re + z_im * z_im <= 0.25f * 0.25f){
         *ptr = maxIterations;
         return;
     }
