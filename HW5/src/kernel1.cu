@@ -57,6 +57,9 @@ void hostFE(float upperX, float upperY, float lowerX, float lowerY, int* img, in
     dim3 num_blocks(resX / threads_per_block.x, resY / threads_per_block.y);
     mandelKernel<<<num_blocks, threads_per_block>>>(device_data, lowerX, lowerY, stepX, stepY, resX, maxIterations);
     
+    // wait for kernel function finish
+    cudaDeviceSynchronize();
+
     // output answers
     cudaMemcpy(host_data, device_data, N * sizeof(int), cudaMemcpyDeviceToHost);
     memcpy(img, host_data, N * sizeof(int));
