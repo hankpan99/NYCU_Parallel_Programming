@@ -48,7 +48,6 @@ void hostFE(float upperX, float upperY, float lowerX, float lowerY, int* img, in
     int N = resX * resY;
 
     int *device_data;
-    // cudaMalloc(&device_data, N * sizeof(int));
     cudaHostRegister(img, N * sizeof(int), cudaHostRegisterMapped);
     cudaHostGetDevicePointer(&device_data, img, 0);
 
