@@ -52,7 +52,7 @@ void hostFE(float upperX, float upperY, float lowerX, float lowerY, int* img, in
     cudaHostGetDevicePointer(&device_data, img, 0);
 
     // launch kernel function
-    dim3 threads_per_block(20, 20);
+    dim3 threads_per_block(16, 16);
     dim3 num_blocks(resX / threads_per_block.x, resY / threads_per_block.y);
     mandelKernel<<<num_blocks, threads_per_block>>>(device_data, lowerX, lowerY, stepX, stepY, resX, maxIterations);
     
